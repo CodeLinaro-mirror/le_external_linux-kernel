@@ -376,6 +376,11 @@
             <&tlmm 62 GPIO_ACTIVE_HIGH>;
         status = "ok";
     };
+
+	ss5_pwr_ctrl0 {
+		ssVreset-gpio = <&tlmm 40 1>;
+		ssVboot-gpio = <&tlmm 36 1>;
+	};
 };
 
 &tlmm {
