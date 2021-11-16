@@ -1060,7 +1060,9 @@ static int stmmac_init_phy(struct net_device *dev)
 	 * device as well.
 	 * Note: phydev->phy_id is the result of reading the UID PHY registers.
 	 */
-	if (!priv->plat->phy_node && phydev->phy_id == 0) {
+
+	/* don't drop the phy connection when mac2mac enable */
+	if (!priv->plat->phy_node && phydev->phy_id == 0 && !priv->plat->mac2mac_en) {
 		phy_disconnect(phydev);
 		return -ENODEV;
 	}
@@ -4637,7 +4639,7 @@ int stmmac_dvr_probe(struct device *device,
 
 	stmmac_check_pcs_mode(priv);
 
-	if (!priv->plat->mac2mac_en &&
+	if (priv->plat->mac2mac_en &&
 	    (priv->hw->pcs != STMMAC_PCS_RGMII &&
 	     priv->hw->pcs != STMMAC_PCS_TBI &&
 	     priv->hw->pcs != STMMAC_PCS_RTBI)) {

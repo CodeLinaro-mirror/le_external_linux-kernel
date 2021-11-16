@@ -38,6 +38,7 @@ static void ethqos_rgmii_io_macro_loopback(struct qcom_ethqos *ethqos,
 					   int mode);
 static int phy_digital_loopback_config(
 	struct qcom_ethqos *ethqos, int speed, int config);
+static int turn_off_autoneg_func(struct qcom_ethqos *ethqos);
 
 bool phy_intr_en;
 
@@ -992,6 +993,39 @@ static int ethqos_mdio_read(struct stmmac_priv  *priv, int phyaddr, int phyreg)
 	return data;
 }
 
+static int ethqos_mdio_write(struct stmmac_priv  *priv, int phyaddr, int phyreg,
+			     u16 phydata)
+{
+	unsigned int mii_address = priv->hw->mii.addr;
+	unsigned int mii_data = priv->hw->mii.data;
+	u32 v;
+	u32 value = MII_BUSY;
+	struct qcom_ethqos *ethqos = priv->plat->bsp_priv;
+	if (ethqos->phy_state == PHY_IS_OFF) {
+		ETHQOSINFO("Phy is in off state reading is not possible\n");
+		return -EOPNOTSUPP;
+	}
+	value |= (phyaddr << priv->hw->mii.addr_shift)
+		& priv->hw->mii.addr_mask;
+	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
+	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
+		& priv->hw->mii.clk_csr_mask;
+	if (priv->plat->has_gmac4)
+		value |= MII_GMAC4_WRITE;
+	else
+		value |= MII_WRITE;
+	/* Wait until any existing MII operation is complete */
+	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
+			       100, 10000))
+		return -EBUSY;
+	/* Set the MII address register to write */
+	writel_relaxed(phydata, priv->ioaddr + mii_data);
+	writel_relaxed(value, priv->ioaddr + mii_address);
+	/* Wait until any existing MII operation is complete */
+	return readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
+				  100, 10000);
+}
+
 static int ethqos_phy_intr_config(struct qcom_ethqos *ethqos)
 {
 	int ret = 0;
@@ -1129,6 +1163,27 @@ static const struct of_device_id qcom_ethqos_match[] = {
 	{ .compatible = "qcom,stmmac-ethqos", },
 	{}
 };
+
+static int turn_off_autoneg_func(struct qcom_ethqos *ethqos)
+{
+        int phydata = 0;
+
+        struct platform_device *pdev = ethqos->pdev;
+        struct net_device *dev = platform_get_drvdata(pdev);
+        struct stmmac_priv *priv = netdev_priv(dev);
+
+        /* Do Datapath reset */
+        phydata = ethqos_mdio_read(priv, priv->plat->phy_addr, MII_BMCR);
+        phydata |= BMCR_RESET;
+        ethqos_mdio_write(priv, priv->plat->phy_addr, MII_BMCR, phydata);
+
+        /* Disable auto neg */
+        phydata = ethqos_mdio_read(priv, priv->plat->phy_addr, MII_BMCR);
+        phydata &= ~(BMCR_ANENABLE);
+        ethqos_mdio_write(priv, priv->plat->phy_addr, MII_BMCR, phydata);
+
+	return 0;
+}
 
 static ssize_t read_phy_reg_dump(struct file *file, char __user *user_buf,
 				 size_t count, loff_t *ppos)
@@ -2429,8 +2484,9 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
 		ETHQOSINFO("Early ethernet is enabled\n");
 	}
 
-	ethqos->speed = SPEED_10;
-	ethqos_update_rgmii_clk_and_bus_cfg(ethqos, SPEED_10);
+	/*change speed to 1000 */
+	ethqos->speed = SPEED_1000;
+	ethqos_update_rgmii_clk_and_bus_cfg(ethqos, SPEED_1000);
 	ethqos_set_func_clk_en(ethqos);
 	if (ethqos->emac_ver == EMAC_HW_v2_0_0)
 		ethqos->disable_ctile_pc = 1;
@@ -2546,6 +2602,8 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
 	ethqos_emac_mem_base(ethqos);
 	pethqos = ethqos;
 	ethqos_create_debugfs(ethqos);
+
+	turn_off_autoneg_func(ethqos);
 
 	qcom_ethqos_read_iomacro_por_values(ethqos);
 

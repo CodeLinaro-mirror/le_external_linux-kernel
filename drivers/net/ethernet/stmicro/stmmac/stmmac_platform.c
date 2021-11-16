@@ -410,10 +410,13 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
 		dev_warn(&pdev->dev, "snps,phy-addr property is deprecated\n");
 
 	/* To Configure PHY by using all device-tree supported properties */
-	if (!plat->mac2mac_en) {
-		if (stmmac_dt_phy(plat, np, &pdev->dev))
+
+	/* MDIO still need to query the PHY status in our case.
+	 * We should not impact the ethernet function without mac2mac.
+	 */
+
+	if (stmmac_dt_phy(plat, np, &pdev->dev))
 			return ERR_PTR(-ENODEV);
-	}
 
 	of_property_read_u32(np, "tx-fifo-depth", &plat->tx_fifo_size);
 
