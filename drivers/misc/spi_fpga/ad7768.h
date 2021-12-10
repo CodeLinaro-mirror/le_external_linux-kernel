@@ -1,10 +1,10 @@
+// SPDX-License-Identifier: GPL-2.0
+
 #ifndef AD7768_H_
 #define AD7768_H_
 
 #include <linux/clk.h>
 
-/* #include <linux/fpga/adi-axi-common.h> */
-/* #include <linux/iio/iio.h> */
 /* AD7768 registers definition */
 #define AD7768_CH_STANDBY           0x00
 #define AD7768_CH_MODE              0x01

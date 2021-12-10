@@ -1,3 +1,12 @@
+// SPDX-License-Identifier: GPL-2.0
+
+/*
+ *  fpga.h - QED spi fgpa register definitions.
+ *
+ *  Copyright (C) 2021 Lantronix Inc.
+ *
+ */
+
 #ifndef FPGA_H_
 #define FPGA_H_
 
@@ -5,9 +14,7 @@
 
 #define FPGA_CFG_SPI_CS 0
 
-#define FPGA_ID_VALUE 0x56	
-#define FPGA_RESET_GPIO 0x3e
-#define FPGA_POWER_GPIO 0x4f8
+#define FPGA_ID_VALUE 0x56
 
 /* FPGA registers definition */
 #define FPGA_ID 0x7f
@@ -15,11 +22,22 @@
 /* FPGA_CONFIG_MODE */
 #define FPGA_CFG_MODE 0x7e
 
-#define FPGA_CFG_MODE_CFG_SPI 0x10 
+#define FPGA_CFG_MODE_CFG_SPI 0x10
 enum fpga_cfg {
         FPGA_CFG_MODE_CFG_NORMAL,
         FPGA_CFG_MODE_CFG_ADC0 = 2,
         FPGA_CFG_MODE_CFG_ADC1,
+};
+
+struct fpga_pps_dbg {
+        int8_t slice_3_err;
+        int8_t slice_2_err;
+        int8_t slice_1_err;
+        int8_t slice_0_err;
+        uint8_t freq_err_threshold;
+        uint8_t sync_err_threshold;
+        int8_t pps_phase_offset;
+        int8_t freq_monitor_delta;
 };
 
 #define FPGA_CFG_MODE_RESET 0x00
@@ -87,7 +105,7 @@ enum fpga_cfg {
 #define FPGA_SOFT_RESET_RELEASE 0
 #define FPGA_SOFT_RESET_SET 1
 #define FPGA_ADC_RESET_RELEASE 0
-#define FPGA_ADC_RESET_SET BIT(1) 
+#define FPGA_ADC_RESET_SET BIT(1)
 
 /* FPGA_IRQ_HI */
 #define FPGA_IRQ_HI 0x68
@@ -192,7 +210,7 @@ enum fpga_cfg {
 
 /* FPGA_*_ERROR_TRH */
 #define FPGA_PPS_PHASE_OFFSET 0x55
-#define FPGA_FREQ_ERROR 0x54
+#define FPGA_FREQ_MONITOR_DELTA 0x54
 
 struct fpga_state {
         struct spi_device *spi_cfg;
