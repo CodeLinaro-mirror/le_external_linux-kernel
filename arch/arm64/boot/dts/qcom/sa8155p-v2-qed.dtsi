@@ -342,6 +342,16 @@
         };
 
 
+    /* fpga spi control device  */
+    fpga_spi_device {
+        compatible = "ltx,fpga-device";
+        label = "fpga-spi-device";
+        pinctrl-names = "default";
+        pinctrl-0 = <&fpga_spi_power_default &fpga_spi_reset_default>;
+        fpga-gpios = <&pm8150_2_gpios 10 GPIO_ACTIVE_HIGH>,
+            <&tlmm 62 GPIO_ACTIVE_HIGH>;
+        status = "ok";
+    };
 };
 
 &tlmm {
@@ -420,6 +430,18 @@
 		};
 		config {
 			pins = "gpio82";
+			drive-strength =<2>;
+			bias-pull-down;
+		};
+	};
+
+	fpga_spi_reset_default: fpga_spi_reset_default {
+		mux {
+			pins = "gpio62";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio62";
 			drive-strength =<2>;
 			bias-pull-down;
 		};
@@ -661,6 +683,11 @@
 	status = "ok";
 };
 
+/* FPGA upgrade */
+&qupv3_se8_i2c {
+	status = "ok";
+};
+
 /* arm control qup */
 &qupv3_se14_spi {
 	status = "ok";
@@ -777,4 +804,15 @@
                         power-source = <0>;
                 };
         };
+};
+&pm8150_2_gpios {
+    fpga_spi_power {
+        fpga_spi_power_default: fpga_spi_power_default {
+                pins = "gpio10";
+                function = "normal";
+                input-enable;
+                bias-pull-down;
+                power-source = <0>;
+        };
+    };
 };
