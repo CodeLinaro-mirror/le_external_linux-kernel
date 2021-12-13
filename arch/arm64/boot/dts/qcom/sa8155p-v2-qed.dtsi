@@ -175,11 +175,44 @@
 };
 
 &ethqos_hw {
-	status = "disabled";
+	/*enable mac2mac*/
+	mac2mac;
+	mac2mac-rgmii-speed = <1000>;
+	pinctrl-names = "dev-emac-mdc",
+		"dev-emac-mdio",
+		"dev-emac-rgmii_txd0_state",
+		"dev-emac-rgmii_txd1_state",
+		"dev-emac-rgmii_txd2_state",
+		"dev-emac-rgmii_txd3_state",
+		"dev-emac-rgmii_txc_state",
+		"dev-emac-rgmii_tx_ctl_state",
+		"dev-emac-rgmii_rxd0_state",
+		"dev-emac-rgmii_rxd1_state",
+		"dev-emac-rgmii_rxd2_state",
+		"dev-emac-rgmii_rxd3_state",
+		"dev-emac-rgmii_rxc_state",
+		"dev-emac-rgmii_rx_ctl_state",
+		"dev-emac-phy_intr",
+		"dev-emac-phy_reset_state";
 };
 
 &emac_hw {
-	status = "disabled";
+	pinctrl-names = "dev-emac-mdc",
+		"dev-emac-mdio",
+		"dev-emac-rgmii_txd0_state",
+		"dev-emac-rgmii_txd1_state",
+		"dev-emac-rgmii_txd2_state",
+		"dev-emac-rgmii_txd3_state",
+		"dev-emac-rgmii_txc_state",
+		"dev-emac-rgmii_tx_ctl_state",
+		"dev-emac-rgmii_rxd0_state",
+		"dev-emac-rgmii_rxd1_state",
+		"dev-emac-rgmii_rxd2_state",
+		"dev-emac-rgmii_rxd3_state",
+		"dev-emac-rgmii_rxc_state",
+		"dev-emac-rgmii_rx_ctl_state",
+		"dev-emac-phy_intr",
+		"dev-emac-phy_reset_state";
 };
 
 / {
@@ -232,8 +265,6 @@
         /delete-node/ tdm_quin_tx;
 	/delete-node/ hsi2s;
 	/delete-node/ gpio_keys;
-	/delete-node/ ethqos_hw;
-	/delete-node/ emac_hw;
 
 	qcom,cam-req-mgr {
 		status = "disabled";
