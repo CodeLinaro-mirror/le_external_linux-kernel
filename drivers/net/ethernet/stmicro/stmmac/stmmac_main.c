@@ -117,6 +117,23 @@ static void stmmac_exit_fs(struct net_device *dev);
 
 #define STMMAC_COAL_TIMER(x) (jiffies + usecs_to_jiffies(x))
 
+static char g_mac_addr[ETH_ALEN];
+static int g_usr_mac;
+
+/* Retrieve user set MAC address */
+static int __init setup_stm_mac(char *macstr)
+{
+	u8 *mac = macstr;
+
+	if (mac_pton(mac, g_mac_addr))
+		g_usr_mac = 1;
+
+	return 0;
+}
+
+/* IGB Mac address */
+__setup("stm_mac=", setup_stm_mac);
+
 /**
  * stmmac_verify_args - verify the driver parameters.
  * Description: it checks the driver parameters and set a default in case of
@@ -4535,6 +4552,13 @@ int stmmac_dvr_probe(struct device *device,
 
 	if (res->mac)
 		memcpy(priv->dev->dev_addr, res->mac, ETH_ALEN);
+
+	if (g_usr_mac) {
+		dev_info(priv->device,
+			"Setting MAC address from kernel commandline: %pM\n",
+			g_mac_addr);
+		memcpy(priv->dev->dev_addr, g_mac_addr, ETH_ALEN);
+	}
 
 	dev_set_drvdata(device, priv->dev);
 
