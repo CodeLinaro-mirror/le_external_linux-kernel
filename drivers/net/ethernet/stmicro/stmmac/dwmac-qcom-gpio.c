@@ -66,6 +66,46 @@ static int setup_gpio_input_common
 	return ret;
 }
 
+static int setup_gpio_output_common
+	(struct device *dev, const char *name, int value)
+{
+	int ret = 0, pin = 0;
+
+	if (of_find_property(dev->of_node, name, NULL)) {
+		pin = ret = of_get_named_gpio(dev->of_node, name, 0);
+		if (ret >= 0) {
+			ret = gpio_request(pin, name);
+			if (ret) {
+				ETHQOSERR("%s: Can't get GPIO %s, ret = %d\n",
+					name, ret);
+				return ret;
+			}
+
+			ret = gpio_direction_output(pin, value);
+			if (ret) {
+				ETHQOSERR(
+					"%s: Can't set GPIO %s direction, ret = %d\n",
+					name, ret);
+				gpio_free(pin);
+				return ret;
+			}
+			gpio_free(pin);
+		} else {
+			if (ret == -EPROBE_DEFER)
+				ETHQOSERR("get EMAC_GPIO probe defer\n");
+			else
+				ETHQOSERR("can't get gpio %s ret %d\n", name,
+					ret);
+			return ret;
+		}
+	} else {
+		ETHQOSERR("can't find gpio %s\n", name);
+		ret = -EINVAL;
+	}
+
+	return ret;
+}
+
 int ethqos_init_reqgulators(struct qcom_ethqos *ethqos)
 {
 	int ret = 0;
@@ -316,6 +356,16 @@ int ethqos_init_gpio(struct qcom_ethqos *ethqos)
 	if (ret) {
 		ETHQOSERR("Failed to setup <%s> gpio\n",
 			  "qcom,phy-intr-redirect");
+		goto gpio_error;
+	}
+
+	/* Set vsc reset-gpio 148 to up */
+	ret = setup_gpio_output_common(
+			&ethqos->pdev->dev, "vsc,reset-gpio", 1);
+
+	if (ret) {
+		ETHQOSERR("Failed to setup <%s> gpio\n",
+			"vsc,reset-gpio");
 		goto gpio_error;
 	}
 
