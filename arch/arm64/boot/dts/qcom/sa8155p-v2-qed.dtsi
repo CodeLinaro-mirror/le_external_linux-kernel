@@ -178,6 +178,7 @@
 	/*enable mac2mac*/
 	mac2mac;
 	mac2mac-rgmii-speed = <1000>;
+	vsc,reset-gpio = <&tlmm 148 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "dev-emac-mdc",
 		"dev-emac-mdio",
 		"dev-emac-rgmii_txd0_state",
