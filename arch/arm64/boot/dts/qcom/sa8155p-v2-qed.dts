@@ -21,4 +21,5 @@
 	model = "Qualcomm Technologies, Inc. SA8155P V2 ADP AIR";
 	compatible = "qcom,sa8155p-v2-adp-air", "qcom,sa8155p", "qcom,adp-air";
 	qcom,board-id = <0x51010019 0>;
+	qcom,msm-id = <0x16f 0x20000>, <0x20a 0x20002>;
 };
