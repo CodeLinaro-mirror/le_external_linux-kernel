@@ -1,0 +1,10 @@
+#
+# QED specific sysfs
+#
+menu "QED specific configuration"
+
+config QED_FS
+        bool "QED specific information"
+        default n
+
+endmenu
