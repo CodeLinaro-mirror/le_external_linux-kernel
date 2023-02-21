@@ -5758,7 +5758,7 @@ CONFIG_RTC_CLASS                                policy<{'amd64': 'y', 'arm64': '
 CONFIG_RTC_HCTOSYS                              policy<{'amd64': 'y', 'arm64': 'y', 'armhf': 'y', 'i386': 'y', 'ppc64el': 'y'}>
 CONFIG_RTC_HCTOSYS_DEVICE                       policy<{'amd64': '"rtc0"', 'arm64': '"rtc1"', 'armhf': '"rtc0"', 'i386': '"rtc0"', 'ppc64el': '"rtc0"'}>
 CONFIG_RTC_SYSTOHC                              policy<{'amd64': 'y', 'arm64': 'y', 'armhf': 'y', 'i386': 'y', 'ppc64el': 'y'}>
-CONFIG_RTC_SYSTOHC_DEVICE                       policy<{'amd64': '"rtc0"', 'arm64': '"rtc0"', 'armhf': '"rtc0"', 'i386': '"rtc0"', 'ppc64el': '"rtc0"'}>
+CONFIG_RTC_SYSTOHC_DEVICE                       policy<{'amd64': '"rtc0"', 'arm64': '"rtc1"', 'armhf': '"rtc0"', 'i386': '"rtc0"', 'ppc64el': '"rtc0"'}>
 CONFIG_RTC_DEBUG                                policy<{'amd64': 'n', 'arm64': 'n', 'armhf': 'n', 'i386': 'n', 'ppc64el': 'n'}>
 CONFIG_RTC_INTF_SYSFS                           policy<{'amd64': 'y', 'arm64': 'y', 'armhf': 'y', 'i386': 'y', 'ppc64el': 'y'}>
 CONFIG_RTC_INTF_PROC                            policy<{'amd64': 'y', 'arm64': 'y', 'armhf': 'y', 'i386': 'y', 'ppc64el': 'y'}>
